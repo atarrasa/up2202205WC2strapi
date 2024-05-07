@@ -8,7 +8,6 @@ module.exports = ({ env }) => ({
     transfer: {
     token: {
     salt: env('TRANSFER_TOKEN_SALT', 'd9b0df66ff97a666027e665707b4e3e8'),
-    
       },
   },
     url:"/safeadmin"
