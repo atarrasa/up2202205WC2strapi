@@ -802,6 +802,7 @@ export interface ApiArticleArticle extends Schema.CollectionType {
   attributes: {
     title: Attribute.String &
       Attribute.Required &
+      Attribute.Unique &
       Attribute.SetMinMaxLength<{
         minLength: 5;
         maxLength: 100;
@@ -812,7 +813,7 @@ export interface ApiArticleArticle extends Schema.CollectionType {
         minLength: 5;
         maxLength: 9000;
       }>;
-    slug: Attribute.UID<'api::article.article', 'title'>;
+    slug: Attribute.UID<'api::article.article', 'title'> & Attribute.Required;
     description: Attribute.String;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
@@ -832,29 +833,34 @@ export interface ApiArticleArticle extends Schema.CollectionType {
   };
 }
 
-export interface ApiAuthorAuthor extends Schema.CollectionType {
-  collectionName: 'authors';
+export interface ApiFeatureFeature extends Schema.CollectionType {
+  collectionName: 'features';
   info: {
-    singularName: 'author';
-    pluralName: 'authors';
-    displayName: 'Author';
+    singularName: 'feature';
+    pluralName: 'features';
+    displayName: 'feature';
   };
   options: {
     draftAndPublish: true;
   };
   attributes: {
-    name: Attribute.String;
+    name: Attribute.String &
+      Attribute.Required &
+      Attribute.SetMinMaxLength<{
+        minLength: 2;
+        maxLength: 60;
+      }>;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<
-      'api::author.author',
+      'api::feature.feature',
       'oneToOne',
       'admin::user'
     > &
       Attribute.Private;
     updatedBy: Attribute.Relation<
-      'api::author.author',
+      'api::feature.feature',
       'oneToOne',
       'admin::user'
     > &
@@ -862,29 +868,90 @@ export interface ApiAuthorAuthor extends Schema.CollectionType {
   };
 }
 
-export interface ApiPresentationPresentation extends Schema.CollectionType {
-  collectionName: 'presentations';
+export interface ApiMessageMessage extends Schema.CollectionType {
+  collectionName: 'messages';
   info: {
-    singularName: 'presentation';
-    pluralName: 'presentations';
-    displayName: 'Presentation';
+    singularName: 'message';
+    pluralName: 'messages';
+    displayName: 'email-message';
+    description: '';
   };
   options: {
     draftAndPublish: true;
   };
   attributes: {
-    presentation: Attribute.RichText;
+    From: Attribute.Email &
+      Attribute.Required &
+      Attribute.SetMinMaxLength<{
+        minLength: 5;
+        maxLength: 100;
+      }>;
+    name: Attribute.String &
+      Attribute.Required &
+      Attribute.SetMinMaxLength<{
+        minLength: 5;
+        maxLength: 80;
+      }>;
+    message: Attribute.String &
+      Attribute.Required &
+      Attribute.SetMinMaxLength<{
+        minLength: 10;
+        maxLength: 1000;
+      }>;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<
-      'api::presentation.presentation',
+      'api::message.message',
       'oneToOne',
       'admin::user'
     > &
       Attribute.Private;
     updatedBy: Attribute.Relation<
-      'api::presentation.presentation',
+      'api::message.message',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+  };
+}
+
+export interface ApiServiceService extends Schema.CollectionType {
+  collectionName: 'services';
+  info: {
+    singularName: 'service';
+    pluralName: 'services';
+    displayName: 'Service';
+    description: '';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    title: Attribute.String &
+      Attribute.Required &
+      Attribute.Unique &
+      Attribute.SetMinMaxLength<{
+        minLength: 3;
+        maxLength: 40;
+      }>;
+    features: Attribute.Relation<
+      'api::service.service',
+      'oneToMany',
+      'api::feature.feature'
+    >;
+    icon: Attribute.Media;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    publishedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<
+      'api::service.service',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<
+      'api::service.service',
       'oneToOne',
       'admin::user'
     > &
@@ -911,8 +978,9 @@ declare module '@strapi/types' {
       'plugin::users-permissions.role': PluginUsersPermissionsRole;
       'plugin::users-permissions.user': PluginUsersPermissionsUser;
       'api::article.article': ApiArticleArticle;
-      'api::author.author': ApiAuthorAuthor;
-      'api::presentation.presentation': ApiPresentationPresentation;
+      'api::feature.feature': ApiFeatureFeature;
+      'api::message.message': ApiMessageMessage;
+      'api::service.service': ApiServiceService;
     }
   }
 }
